@@ -1,8 +1,8 @@
 package gift.service;
 
 import gift.converter.WishListConverter;
+import gift.dto.PageRequestDTO;
 import gift.dto.WishListDTO;
-import gift.dto.WishListPageRequestDTO;
 import gift.model.Product;
 import gift.model.User;
 import gift.model.WishList;
@@ -29,7 +29,7 @@ public class WishListService {
         this.productRepository = productRepository;
     }
 
-    public Pageable createPageRequest(WishListPageRequestDTO pageRequestDTO) {
+    public Pageable createPageRequest(PageRequestDTO pageRequestDTO) {
         Sort sort;
         if (pageRequestDTO.getDirection().equalsIgnoreCase(Sort.Direction.DESC.name())) {
             sort = Sort.by(pageRequestDTO.getSortBy()).descending();

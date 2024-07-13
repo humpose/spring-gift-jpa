@@ -1,7 +1,7 @@
 package gift.controller;
 
+import gift.dto.PageRequestDTO;
 import gift.dto.WishListDTO;
-import gift.dto.WishListPageRequestDTO;
 import gift.service.WishListService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Max;
@@ -44,7 +44,7 @@ public class WishListController {
             return "redirect:/users/login";
         }
 
-        WishListPageRequestDTO pageRequestDTO = new WishListPageRequestDTO(page, size, sortBy, direction);
+        PageRequestDTO pageRequestDTO = new PageRequestDTO(page, size, sortBy, direction);
         Pageable pageable = wishListService.createPageRequest(pageRequestDTO);
         Page<WishListDTO> wishListPage = wishListService.getWishListByUser(email, pageable);
 

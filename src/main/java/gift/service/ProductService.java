@@ -1,8 +1,8 @@
 package gift.service;
 
 import gift.converter.ProductConverter;
+import gift.dto.PageRequestDTO;
 import gift.dto.ProductDTO;
-import gift.dto.ProductPageRequestDTO;
 import gift.model.Product;
 import gift.repository.ProductRepository;
 import java.util.Optional;
@@ -16,18 +16,12 @@ import org.springframework.stereotype.Service;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private static final int MAX_PAGE_SIZE = 30;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public Pageable createPageRequest(ProductPageRequestDTO pageRequestDTO) {
-        int size = pageRequestDTO.getSize();
-        if (size > MAX_PAGE_SIZE) {
-            size = MAX_PAGE_SIZE;
-        }
-
+    public Pageable createPageRequest(PageRequestDTO pageRequestDTO) {
         Sort sort;
         if (pageRequestDTO.getDirection().equalsIgnoreCase(Sort.Direction.DESC.name())) {
             sort = Sort.by(pageRequestDTO.getSortBy()).descending();
@@ -35,7 +29,7 @@ public class ProductService {
             sort = Sort.by(pageRequestDTO.getSortBy()).ascending();
         }
 
-        return PageRequest.of(pageRequestDTO.getPage(), size, sort);
+        return PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), sort);
     }
 
     public Page<ProductDTO> findAllProducts(Pageable pageable) {

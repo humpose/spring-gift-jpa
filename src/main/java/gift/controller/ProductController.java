@@ -1,7 +1,7 @@
 package gift.controller;
 
+import gift.dto.PageRequestDTO;
 import gift.dto.ProductDTO;
-import gift.dto.ProductPageRequestDTO;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
 import java.util.Optional;
@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import org.springframework.validation.annotation.Validated;
 
 @Controller
 @RequestMapping("/admin/products")
+@Validated
 public class ProductController {
 
     private final ProductService productService;
@@ -33,18 +36,22 @@ public class ProductController {
     @GetMapping
     public String allProducts(
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "10") @Min(1) @Max(30) int size,
         @RequestParam(defaultValue = "id") String sortBy,
         @RequestParam(defaultValue = "asc") String direction,
         Model model) {
 
-        ProductPageRequestDTO pageRequestDTO = new ProductPageRequestDTO(page, size, sortBy, direction);
+        PageRequestDTO pageRequestDTO = new PageRequestDTO(page, size, sortBy, direction);
         Pageable pageable = productService.createPageRequest(pageRequestDTO);
         Page<ProductDTO> productPage = productService.findAllProducts(pageable);
 
+        // 모델에 데이터 추가
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("direction", direction);
+
         return "Products";
     }
 

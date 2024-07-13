@@ -1,19 +1,29 @@
 package gift.dto;
 
-public class ProductPageRequestDTO {
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
+public class PageRequestDTO {
+    @Min(0)
     private int page;
+
+    @Min(1)
+    @Max(30)
     private int size;
+
     private String sortBy;
     private String direction;
 
-    public ProductPageRequestDTO() {}
+    public PageRequestDTO() {}
 
-    public ProductPageRequestDTO(int page, int size, String sortBy, String direction) {
+    public PageRequestDTO(int page, int size, String sortBy, String direction) {
         this.page = page;
         this.size = size;
         this.sortBy = sortBy;
         this.direction = direction;
     }
+
+    // Getters and setters
 
     public int getPage() {
         return page;
