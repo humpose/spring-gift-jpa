@@ -1,6 +1,7 @@
 package gift.controller;
 
 import gift.dto.ProductDTO;
+import gift.dto.ProductPageRequestDTO;
 import gift.service.ProductService;
 import jakarta.validation.Valid;
 import java.util.Optional;
@@ -37,17 +38,13 @@ public class ProductController {
         @RequestParam(defaultValue = "asc") String direction,
         Model model) {
 
-
-        Pageable pageable = productService.createPageRequest(page, size, sortBy, direction);
+        ProductPageRequestDTO pageRequestDTO = new ProductPageRequestDTO(page, size, sortBy, direction);
+        Pageable pageable = productService.createPageRequest(pageRequestDTO);
         Page<ProductDTO> productPage = productService.findAllProducts(pageable);
 
-        // 모델에 데이터 추가
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("sortBy", sortBy);
-        model.addAttribute("direction", direction);
-
         return "Products";
     }
 

@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.converter.WishListConverter;
 import gift.dto.WishListDTO;
+import gift.dto.WishListPageRequestDTO;
 import gift.model.Product;
 import gift.model.User;
 import gift.model.WishList;
@@ -21,7 +22,6 @@ public class WishListService {
     private final WishListRepository wishListRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
-    private static final int MAX_PAGE_SIZE = 30; // 페이지 크기의 최대값 설정
 
     public WishListService(WishListRepository wishListRepository, UserRepository userRepository, ProductRepository productRepository) {
         this.wishListRepository = wishListRepository;
@@ -29,19 +29,15 @@ public class WishListService {
         this.productRepository = productRepository;
     }
 
-    public Pageable createPageRequest(int page, int size, String sortBy, String direction) {
-        if (size > MAX_PAGE_SIZE) {
-            size = MAX_PAGE_SIZE;
-        }
-
+    public Pageable createPageRequest(WishListPageRequestDTO pageRequestDTO) {
         Sort sort;
-        if (direction.equalsIgnoreCase(Sort.Direction.DESC.name())) {
-            sort = Sort.by(sortBy).descending();
+        if (pageRequestDTO.getDirection().equalsIgnoreCase(Sort.Direction.DESC.name())) {
+            sort = Sort.by(pageRequestDTO.getSortBy()).descending();
         } else {
-            sort = Sort.by(sortBy).ascending();
+            sort = Sort.by(pageRequestDTO.getSortBy()).ascending();
         }
 
-        return PageRequest.of(page, size, sort);
+        return PageRequest.of(pageRequestDTO.getPage(), pageRequestDTO.getSize(), sort);
     }
 
     public Page<WishListDTO> getWishListByUser(String email, Pageable pageable) {

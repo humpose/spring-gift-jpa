@@ -2,6 +2,7 @@ package gift.service;
 
 import gift.converter.ProductConverter;
 import gift.dto.ProductDTO;
+import gift.dto.ProductPageRequestDTO;
 import gift.model.Product;
 import gift.repository.ProductRepository;
 import java.util.Optional;
@@ -21,19 +22,20 @@ public class ProductService {
         this.productRepository = productRepository;
     }
 
-    public Pageable createPageRequest(int page, int size, String sortBy, String direction) {
+    public Pageable createPageRequest(ProductPageRequestDTO pageRequestDTO) {
+        int size = pageRequestDTO.getSize();
         if (size > MAX_PAGE_SIZE) {
             size = MAX_PAGE_SIZE;
         }
 
         Sort sort;
-        if (direction.equalsIgnoreCase(Sort.Direction.DESC.name())) {
-            sort = Sort.by(sortBy).descending();
+        if (pageRequestDTO.getDirection().equalsIgnoreCase(Sort.Direction.DESC.name())) {
+            sort = Sort.by(pageRequestDTO.getSortBy()).descending();
         } else {
-            sort = Sort.by(sortBy).ascending();
+            sort = Sort.by(pageRequestDTO.getSortBy()).ascending();
         }
 
-        return PageRequest.of(page, size, sort);
+        return PageRequest.of(pageRequestDTO.getPage(), size, sort);
     }
 
     public Page<ProductDTO> findAllProducts(Pageable pageable) {
@@ -53,8 +55,15 @@ public class ProductService {
     }
 
     public void updateProduct(ProductDTO productDTO) {
-        Product product = ProductConverter.convertToEntity(productDTO);
-        productRepository.save(product);
+        Product existingProduct = productRepository.findById(productDTO.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+
+        Product updatedProduct = new Product(existingProduct.getId(),
+            ProductConverter.convertToEntity(productDTO).getName(),
+            productDTO.getPrice(),
+            productDTO.getImageUrl());
+
+        productRepository.save(updatedProduct);
     }
 
     public void deleteProduct(Long id) {
